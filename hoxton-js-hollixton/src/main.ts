@@ -21,7 +21,7 @@ type Account = {
 type State = {
   store: Item[]
   users: Account[]
-  page: 'Home' | 'Guys' | 'Girls' | 'Sale'
+  page: 'Home' | 'Guys' | 'Girls' | 'Sale' | null
   section: 'Search' | 'Account' | 'Cart' | ''
   filter: string
 }
@@ -159,7 +159,7 @@ let state: State = {
       "bag": []
     }
   ],
-  page: 'Home',
+  page: null,
   section: '',
   filter: ''
 }
@@ -177,6 +177,11 @@ function create_header() {
   let h2El = document.createElement('h2')
   h2El.className = 'logo'
   h2El.textContent = 'Hollixton'
+  h2El.textContent = 'Hollixton'
+  h2El.addEventListener('click', function () {
+    state.page = 'Home'
+    render()
+  })
 
 
   let Girlspage = document.createElement('a')
@@ -248,7 +253,6 @@ function create_header() {
   appEl.append(headerEl)
 
 }
-create_header()
 
 function create_name() {
   let appEl = document.querySelector('#app')
@@ -268,9 +272,7 @@ function create_name() {
 
 }
 
-create_name()
-
-function render_item() {
+function rendercreatehomepage() {
   let appEl = document.querySelector('#app')
 
   for (let item of state.store) {
@@ -297,6 +299,198 @@ function render_item() {
   }
 }
 
+function render_Girls_Page(appEl: Element) {
+
+  let mainEl = document.createElement('main')
+
+  let sectionname = document.createElement('h2')
+  sectionname.textContent = 'Girls'
+
+
+  for (let item of state.store) {
+    if (item.type == "Girls") {
+      let divEl = document.createElement('div')
+      divEl.className = 'items_in_store'
+
+
+      let imgEl = document.createElement('img')
+      imgEl.src = item.image
+      imgEl.alt = 'item'
+
+      let h3El = document.createElement('h3')
+      h3El.textContent = item.name
+
+      let h4El = document.createElement('h4')
+      h4El.textContent = `£${item.price.toFixed(2)}`
+      //`${item.price},${item.discountedPrice}` 
+
+      divEl.append(imgEl, h3El, h4El)
+      mainEl.append(sectionname)
+      appEl?.append(mainEl, divEl)
+    }
+  }
+}
+
+function render_Guys_Page(appEl: Element) {
+
+  let mainEl = document.createElement('main')
+
+  let sectionname = document.createElement('h2')
+  sectionname.textContent = 'Guys'
+
+
+  for (let item of state.store) {
+    if (item.type == "Guys") {
+      let divEl = document.createElement('div')
+      divEl.className = 'items_in_store'
+
+
+      let imgEl = document.createElement('img')
+      imgEl.src = item.image
+      imgEl.alt = 'item'
+
+      let h3El = document.createElement('h3')
+      h3El.textContent = item.name
+
+      let h4El = document.createElement('h4')
+      h4El.textContent = `£${item.price.toFixed(2)}`
+      //`${item.price},${item.discountedPrice}` 
+
+      divEl.append(imgEl, h3El, h4El)
+      mainEl.append(sectionname)
+      appEl?.append(mainEl, divEl)
+    }
+  }
+}
+
+function render_Sales_Page(appEl: Element) {
+  let mainEl = document.createElement('main')
+
+  let sectionname = document.createElement('h2')
+  sectionname.textContent = 'Sales'
+
+  for (let item of state.store) {
+    if (item.hasOwnProperty('discountedPrice')) {
+
+      let divEl = document.createElement('div')
+      divEl.className = 'items_in_store'
+
+      let imgEl = document.createElement('img')
+      imgEl.src = item.image
+      imgEl.alt = 'item'
+
+      let h3El = document.createElement('h3')
+      h3El.textContent = item.name
+
+      let h4El = document.createElement('h4')
+      h4El.textContent = `${item.discountedPrice}`
+
+      divEl.append(imgEl, h3El, h4El)
+      mainEl.append(sectionname)
+      appEl?.append(mainEl, divEl)
+    }
+
+  }
+}
+
+function renderShoppingBag(appEl: Element) {
+
+}
+
+function renderAccount(appEl: Element) {
+
+  let divEl = document.createElement('div')
+  divEl.className = 'Signin_Section'
+
+  let FormEl = document.createElement('div')
+  FormEl.className = 'Sign_in_form'
+
+  let closeButton = document.createElement('button')
+  closeButton.textContent = 'X'
+  closeButton.className = 'Sign_in_X_button'
+  closeButton.addEventListener('click', function () {
+    state.section = ''
+    render()
+  })
+
+
+  let titleEl = document.createElement('h2')
+  titleEl.textContent = 'Sign In'
+
+  let Sign_In_Label = document.createElement('label')
+
+  let Sign_In_Input = document.createElement('input')
+  Sign_In_Input.type = 'text'
+
+  let Sign_In_Password_Input = document.createElement('input')
+  Sign_In_Password_Input.type = 'pasword'
+
+  let formEl = document.createElement('form')
+  formEl.addEventListener('submit', function (event) {
+    event.preventDefault()
+
+    let helpishereforyou = []
+
+    if (Sign_In_Password_Input.value.length <= 6) {
+      helpishereforyou.push('Password must be 8 charachters or longer')
+    }
+
+    render()
+  })
+
+
+  Sign_In_Label.append(Sign_In_Input, Sign_In_Password_Input)
+  FormEl.append(Sign_In_Label, closeButton, titleEl, formEl)
+  divEl.append(FormEl)
+  appEl.append(divEl)
+
+}
+
+function search_item() {
+  fetch('http://localhost:3005/store')
+    .then(resp => resp.json)
+    .then(store => {
+      state.store = store
+      render()
+    })
+}
+
+function renderSearchpart(appEl: Element) {
+  let divEl = document.createElement('div')
+  divEl.className = 'Search_Section'
+
+  let containerEl = document.createElement('div')
+  containerEl.className = 'Search_Container'
+
+  let closeButton = document.createElement('button')
+  closeButton.textContent = 'X'
+  closeButton.className = 'Section_X_button'
+  closeButton.addEventListener('click', function () {
+    state.section = ''
+    render()
+  })
+
+  let titleEl = document.createElement('h2')
+  titleEl.textContent = 'Search'
+
+  let formEl = document.createElement('form')
+  formEl.addEventListener('submit', function (event) {
+    event.preventDefault()
+
+    state.filter = Search_Input.value
+    search_item()
+    render()
+  })
+
+  let Search_Input = document.createElement('input')
+  formEl.append(Search_Input)
+
+  containerEl.append(closeButton, titleEl, formEl)
+  divEl.append(containerEl)
+  appEl.append(divEl)
+}
+
+
 function create_footer() {
   let appEl = document.querySelector('#app')
 
@@ -316,9 +510,19 @@ function create_footer() {
 function render() {
   let appEl = document.querySelector('#app')
   if (!appEl) return
-  render_item()
+  create_header()
+  create_name()
+
+  if (state.page === 'Home') rendercreatehomepage()
+  if (state.page === 'Girls') render_Girls_Page(appEl)
+  if (state.page === 'Guys') render_Guys_Page(appEl)
+  if (state.page === 'Sale') render_Sales_Page(appEl)
+
+  if (state.section === 'Search') renderSearchpart(appEl)
+  if (state.section === 'Account') renderAccount(appEl)
+
   create_footer()
 }
 render()
 
-
+//Sorry I couldn't finish it all because my mind has been all over the place and i couldn't focus.
